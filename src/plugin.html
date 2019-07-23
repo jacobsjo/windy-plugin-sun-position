@@ -48,6 +48,14 @@
 		import utils from '@windy/utils'
 		import store from '@windy/store'
 		import map from '@windy/map'
+		import pluginDataLoader from '@windy/pluginDataLoader'
+
+		const options = {
+			key: 'nMvpXdWHi4CcsJ6N0ewIYEcU0VE9ONMX',
+			plugin: 'windy-plugin-sun-position'
+		}
+
+		const load = pluginDataLoader( options )
 
 		const lineLength = 80
 
@@ -56,9 +64,10 @@
 		this.onopen = () => {
 			if (isOpen) return;
 			isOpen = true;
+
 			if (!d3.select(".picker").empty() && d3.select(".picker").style("display") != "none") {
 				onPickerOpened()
-				redraw()
+				movedPickerRedraw()
 			};
 		}
 
@@ -76,6 +85,9 @@
 		var sunLine
 		var sunriseLine
 		var sunsetLine
+
+		var timeOffset = 0
+		var useUTC = false
 
 		const onPickerOpened = () => {
 			var p = d3.select(".picker")
@@ -99,7 +111,30 @@
 			d3.select(".open-picker").attr("id", "hide")
 		}
 
+		const movedPickerRedraw = () => {
+			if (store.get('zuluMode')){
+				redraw()
+				return;
+			}
+
+			let { lat, lon, values, overlay } = picker.getParams()
+			const dataOptions = {
+				model: 'gfs',
+				lat: lat,
+				lon: lon
+			}
+
+			load('forecast', dataOptions).then( ({data}) => {
+				timeOffset = data.celestial.TZoffsetMin
+				redraw()
+			})
+		}
+
 		const redraw = () => {
+			if (store.get('zuluMode')){
+				timeOffset = 0;
+			}
+
 			// get picker position
 			let { lat, lon, values, overlay } = picker.getParams()
 
@@ -153,7 +188,7 @@
 
 			var data = []
 
-			var t = new Date(time).setHours(0,0,0,0)
+			var t = new Date(time).setUTCHours(0,-timeOffset,0,0)
 			var steps = 100
 			var stepSize = 24.0*60*60*1000 / steps
 			for (var i = 0 ; i<=steps; i++){
@@ -168,7 +203,7 @@
 	    d3.select('#sun_path').attr('d', line(data));
 
 			d3.select('#sun')
-			.attr('cx', (time - t)*200.0/(24.0*60*60*1000))
+			.attr('cx', (time - t)*200.0/(24.0*60*60*1000) % 200)
 			.attr('cy', (-sunPos.altitude+Math.PI/2) * 100/Math.PI )
 
 		}
@@ -176,11 +211,14 @@
 
 		function time_format(d) {
 			if (isNaN(d)){
-				return "--:--"
+				return "--:--" + (store.get('zuluMode') ? "Z" : "")
 			}
-	    var hours = format_two_digits(d.getHours());
-	    var minutes = format_two_digits(d.getMinutes());
-	    return hours + ":" + minutes;
+
+			var d_local = new Date(d.getTime() + timeOffset * 60 * 1000)
+
+	    var hours = format_two_digits(d_local.getUTCHours());
+	    var minutes = format_two_digits(d_local.getUTCMinutes());
+	    return hours + ":" + minutes + (store.get('zuluMode') ? "Z" : "");
 		}
 
 		function format_two_digits(n) {
@@ -200,14 +238,16 @@
 		picker.on('pickerOpened', latLon => {
 			if (!isOpen) return;
 			onPickerOpened()
-			redraw()
+
+			movedPickerRedraw()
 		} )
 
 		// picker was dragged by user to latLon coords
 		picker.on('pickerMoved', latLon => {
 			if (!isOpen) return;
-			redraw()
-		} )
+
+			movedPickerRedraw()
+		})
 
 		// picker was closed
 		picker.on('pickerClosed', () => {
