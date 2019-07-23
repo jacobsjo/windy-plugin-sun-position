@@ -1,7 +1,7 @@
 {
   "name": "windy-plugin-sun-position",
-  "version": "0.0.1",
-  "description": "Windy plugin that adds an indication of current sun direcection as well as sunset and sunrise directions at picker position",
+  "version": "0.1.0",
+  "description": "Windy plugin that gives shows sun position on the map and gives details about sunset and sunrise times.",
   "main": "dist/plugin.js",
   "scripts": {
     "start": "node ./compiler.js --build --watch --prompt --serve --transpile",
@@ -28,7 +28,6 @@
     "less": "^3.8.1",
     "prompts": "^1.1.1",
     "riot-compiler": "^3.5.1",
-    "ucfirst": "^1.0.0",
-    "suncalc": "^1.8.0"
+    "ucfirst": "^1.0.0"
   }
 }
