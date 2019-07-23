@@ -25,3 +25,11 @@ Now open your browser browser at [https://localhost:9999/plugin.js](https://loca
 Then open your browser at [www.windy.com/dev](https://www.windy.com/dev) to test the plugin.
 
 If it fails, make sure that the plugin is correctly built and accessible with your browser at [https://localhost:9999/plugin.js](https://localhost:9999/plugin.js).
+
+### Changelog
+## V0.1.0
+Original release
+## V0.1.1
+Fixed timezone issues:
+- Displays times in timezone of position selected (instead of local timezone of user)
+- When Windy setting to display all times in UTC is selected, displays all times in UTC
