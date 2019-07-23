@@ -6,10 +6,12 @@ To open the display, click on "More layers..." on the bottom right, then select 
 
 ### Sun dial
 The sun dial displays the current sun azimuth on the map using a black line from the picker position. Additionally, dashed lines show the azimuth of sunrise and sunset. Clicking on the sunrise or sunset line will set the current time to the sunrise or sunset time respectively.
+
 ![Sun dial](pictures/sundial.jpg?raw=true "Sun dial")
 
 ### Sun detail pane
 The sun detail pane on the left shows the time of astronomical, nautical, and civil dusk and dawn; start and end of golden hour and solar noon. Also, the current time and sun azimuth and altitude are displayed.
+
 ![Sun detail pane](pictures/sundetail.jpg?raw=true "Sun detail pane")
 
 ### Development
