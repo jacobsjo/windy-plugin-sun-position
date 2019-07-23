@@ -1,14 +1,207 @@
 <plugin>
+	<div class="mobile-header">Sun Details</div>
 
-	<b>This plugin will rock</b>
+	<div class="plugin-content">
+		<div class="sun-times">
+			<span class="time-column" /><span class="timeframe first" id="nightColor">Nighttime</span><br />
+			<span class="time-column time-text" id=nightEnd>04:00</span><span class="time" id="astroColor">Astronomical Dawn</span><br />
+			<span class="time-column" /><span class="timeframe" id="astroColor">Astron. Twilight</span><br />
+			<span class="time-column time-text" id=nauticalDawn>04:00</span><span class="time" id="blueColor">Nautical Dawn</span><br />
+			<span class="time-column" /><span class="timeframe" id="blueColor">Blue Hour</span><br />
+			<span class="time-column time-text" id=dawn>04:30</span><span class="time" id="goldenColor">Civil Dawn</span><br />
+			<span class="time-column" /><span class="timeframe" id="goldenColor">Golden Hour</span><br />
+			<span class="time-column time-text" id=sunrise>05:00</span><span class="time-minor" id="goldenColor">Sunrise</span><br />
+			<span class="time-column time-text" id=goldenHourEnd>05:30</span><span class="time" id="dayColor">&nbsp;</span><br />
+			<span class="time-column" /><span class="timeframe" id="dayColor">Daytime</span><br />
+			<span class="time-column time-text" id=solarNoon>12:00</span><span class="time-minor" id="dayColor">Solar Noon</span><br />
+			<span class="time-column time-text" id=goldenHour>18:00</span><span class="time" id="goldenColor">&nbsp;</span><br />
+			<span class="time-column" /><span class="timeframe" id="goldenColor">Golden Hour</span><br />
+			<span class="time-column time-text" id=sunset>18:30</span><span class="time-minor" id="goldenColor">Sunset</span><br />
+			<span class="time-column time-text" id=dusk>19:00</span><span class="time" id="blueColor">Civil Dusk</span><br />
+			<span class="time-column" /><span class="timeframe" id="blueColor">Blue Hour</span><br />
+			<span class="time-column time-text" id=nauticalDusk>19:30</span><span class="time" id="astroColor">Nautical Dusk</span><br />
+			<span class="time-column" /><span class="timeframe" id="astroColor">Astron. Twilight</span><br />
+			<span class="time-column time-text" id=night>19:30</span><span class="time" id="nightColor">Astronomical Dusk</span><br />
+			<span class="time-column" /><span class="timeframe last" id="nightColor">Nighttime</span><br />
+
+			<div class="current-time" id=current_time>12:25</div>
+			<span class="current-pos">Azimuth</span>
+			<span class="current-pos">Altitude</span><br />
+			<span class="current-pos" id=azimuth>0</span>
+			<span class="current-pos" id=altitude>0</span>
+
+			<svg class="sun-path">
+				<path id=sun_path />
+				<path id=horizon d="M 0 50 H 200" />
+				<circle class=sun-circle id=sun cx="50" cy="50" r="4"/>
+			</svg>
+
+		</div>
+	</div>
 
 	<script>
+		import picker from '@windy/picker'
+		import utils from '@windy/utils'
+		import store from '@windy/store'
+		import map from '@windy/map'
 
-	console.log('I am mounted to the page')
+		const lineLength = 80
 
-	this.onopen = () => console.log('I am opened')
+		var isOpen = false;
 
-	this.onclose = () => console.log('I am being closed')
+		this.onopen = () => {
+			if (isOpen) return;
+			if (picker.getParams) {
+				isOpen = true;
+				onPickerOpened()
+				redraw()
+			};
+		}
+
+		this.onclose = () => {
+			isOpen = false;
+			d3.select(".picker").select("svg").remove()
+		}
+
+		const readValues = latLon => {
+			pickerOpen = true
+			redraw()
+		}
+
+		var svg
+		var sunLine
+		var sunriseLine
+		var sunsetLine
+
+		const onPickerOpened = () => {
+			var p = d3.select(".picker")
+			svg = p.append("svg").attr("class", "windy-plugin-sun-position sun-position-dial")
+			sunriseLine = svg.append("line").attr("class", "dial-line dial-line-sunrise")
+				.attr("x1", 100).attr("y1", 100).attr("x2", 100).attr("y2", 100).on("click", function(d) {setTime("sunrise")})
+			sunsetLine = svg.append("line").attr("class", "dial-line dial-line-sunset")
+				.attr("x1", 100).attr("y1", 100).attr("x2", 100).attr("y2", 100).on("click", function(d) {setTime("sunset")})
+			sunLine = svg.append("line").attr("class", "dial-line dial-line-sun")
+				.attr("x1", 100).attr("y1", 100).attr("x2", 100).attr("y2", 100)
+
+			d3.selectAll(".dial-line")
+				.on("mouseover", function(d) {
+				  d3.select(this).attr("id", "hover");
+				})
+				.on("mouseout", function(d) {
+				  d3.select(this).attr("id", "");
+				});
+		}
+
+		const redraw = () => {
+			// get picker position
+			let { lat, lon, values, overlay } = picker.getParams()
+
+			// get timestamp
+			var time = store.get('timestamp')
+
+			// get sun directions
+			var times = SunCalc.getTimes(time, lat, lon)
+			var sunPos = SunCalc.getPosition(time, lat, lon)
+			var sunrisePos = SunCalc.getPosition(times.sunrise, lat, lon)
+			var sunsetPos = SunCalc.getPosition(times.sunset, lat, lon)
+
+			var sunLineLength
+			var sunLineOpacity
+
+			if (sunPos.altitude > 0) {
+				sunLineLength = Math.cos(sunPos.altitude) * lineLength
+				sunLineOpacity = 1
+			} else if (sunPos.altitude > -0.1) {  //0.1 rad ~= 6 degrees
+				sunLineLength = lineLength
+				sunLineOpacity = 1 + 10.0 * sunPos.altitude
+			} else {
+				sunLineLength = lineLength
+				sunLineOpacity = 0
+			}
+			sunLine.attr("x2", 100 - Math.sin(sunPos.azimuth) * sunLineLength).attr("y2", 100 + Math.cos(sunPos.azimuth) * sunLineLength).attr("stroke-opacity", sunLineOpacity)
+
+			if (isNaN(sunrisePos.azimuth)){
+				sunriseLine.attr("x2", 100).attr("y2", 100)
+			} else {
+				sunriseLine.attr("x2", 100 - Math.sin(sunrisePos.azimuth) * lineLength).attr("y2", 100 + Math.cos(sunrisePos.azimuth) * lineLength)
+			}
+
+			if (isNaN(sunsetPos.azimuth)){
+				sunsetLine.attr("x2", 100).attr("y2", 100)
+			} else {
+				sunsetLine.attr("x2", 100 - Math.sin(sunsetPos.azimuth) * lineLength).attr("y2", 100 + Math.cos(sunsetPos.azimuth) * lineLength)
+			}
+
+			//set text and onClick handler for all sidebar times
+			Array.prototype.forEach.call(document.getElementsByClassName('time-text'), t => {
+				t.innerHTML = time_format(times[t.id])
+				t.onclick = () => setTime(t.id)
+			})
+
+			document.getElementById('current_time').innerHTML = time_format(new Date(time))
+			document.getElementById('azimuth').innerHTML = (sunPos.azimuth*180/Math.PI).toFixed(1) + "&deg;"
+			document.getElementById('altitude').innerHTML = (sunPos.altitude*180/Math.PI).toFixed(1) + "&deg;"
+
+
+
+			var data = []
+
+			var t = new Date(time).setHours(0,0,0,0)
+			var steps = 100
+			var stepSize = 24.0*60*60*1000 / steps
+			for (var i = 0 ; i<=steps; i++){
+				var alt = -SunCalc.getPosition(t + stepSize*i, lat, lon).altitude;
+				data[i] = {x: 1.0*i/steps, y: alt}
+			}
+
+	    var line = d3.line()
+	                 .x(function(d) { return d['x']*200 })
+	                 .y(function(d) { return (d['y']+Math.PI/2) * 100/Math.PI });
+
+	    d3.select('#sun_path').attr('d', line(data));
+
+			d3.select('#sun')
+			.attr('cx', (time - t)*200.0/(24.0*60*60*1000))
+			.attr('cy', (-sunPos.altitude+Math.PI/2) * 100/Math.PI )
+
+		}
+
+
+		function time_format(d) {
+			if (isNaN(d)){
+				return "--:--"
+			}
+	    var hours = format_two_digits(d.getHours());
+	    var minutes = format_two_digits(d.getMinutes());
+	    return hours + ":" + minutes;
+		}
+
+		function format_two_digits(n) {
+	    return n < 10 ? '0' + n : n;
+		}
+
+		const setTime = timeString => {
+			console.log('setting time to', timeString)
+			let { lat, lon, values, overlay } = picker.getParams()
+			var time = store.get('timestamp')
+			var times = SunCalc.getTimes(time, lat, lon)
+
+			store.set('timestamp', times[timeString].getTime())
+		}
+
+		// picker has been opened at latLon coords
+		picker.on('pickerOpened', latLon => {
+			onPickerOpened()
+			redraw()
+		} )
+
+		// picker was dragged by user to latLon coords
+		picker.on('pickerMoved', latLon => {redraw()} )
+
+		// picker was closed
+		//picker.on('pickerClosed', () => {})
+
+		store.on('timestamp', ts => {redraw()})
 
 	</script>
 </plugin>

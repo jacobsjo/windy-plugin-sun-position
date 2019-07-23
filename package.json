@@ -1,7 +1,7 @@
 {
-  "name": "windy-plugin-examples",
-  "version": "0.5.0",
-  "description": "Windy plugin system enables anyone, with basic knowledge of Javascript to enhance Windy with new functionality (default desc).",
+  "name": "windy-plugin-sun-position",
+  "version": "0.0.1",
+  "description": "Windy plugin that adds an indication of current sun direcection as well as sunset and sunrise directions at picker position",
   "main": "dist/plugin.js",
   "scripts": {
     "start": "node ./compiler.js --build --watch --prompt --serve --transpile",
@@ -11,9 +11,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/windycom/windy-plugins"
+    "url": "git+https://github.com/jacobsjo/windy-plugin-sun-position"
   },
-  "author": "Windyty, S.E.",
+  "author": "Jochen Jacobs",
   "license": "MIT",
   "dependencies": {
     "@babel/core": "^7.1.2",
@@ -28,6 +28,7 @@
     "less": "^3.8.1",
     "prompts": "^1.1.1",
     "riot-compiler": "^3.5.1",
-    "ucfirst": "^1.0.0"
+    "ucfirst": "^1.0.0",
+    "suncalc": "^1.8.0"
   }
 }

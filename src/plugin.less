@@ -1,11 +1,190 @@
 
 @import 'dev/variables.less';
 
+@widthOfMyPlugin: 250px;
 
-.onwindy-plugin-myname {
+.onwindy-plugin-sun-position {
 
+	.left-border {
+    left: @widthOfMyPlugin;
+  }
+
+	#search {
+		display: none;
+	}
 }
 
-#windy-plugin-myname {
+#windy-plugin-sun-position {
+	width: @widthOfMyPlugin;
 
+	.plugin-content {
+    padding: 20px 15px 15px 15px;
+    font-size: 14px;
+    line-height: 1.6;
+    background-color: #404040;
+    color:white;
+
+    h2{
+      color: white;
+    }
+
+    .sun-times{
+
+      margin-left: 5px;
+      margin-right: 5px;
+      margin-top: 10px;
+
+      span{
+        position:relative;
+        left: 20px;
+        display: inline-block;
+        margin-bottom: 0;
+        padding-bottom: 0.5em;
+      }
+
+      span.time-column{
+        width: 70px;
+      }
+
+      .time-minor{
+        font-size: 11px;
+      }
+
+      .time::after, .time-minor::after{
+        display: block;
+        position: absolute;
+        left: -23px;
+        top: 0px;
+        background-color: gray;
+        width: 20px;
+        height: 20px;
+        border-radius: 10px;
+        content: ' ';
+      }
+
+      .time-minor::after{
+        width: 15px;
+        height: 15px;
+        border-radius: 7px;
+        left: -21px;
+        top: 4px;
+      }
+
+      .time::before, .time-minor::before, .timeframe::before{
+        content:"";
+        position: absolute;
+        left: -15px; /* adjust manually */
+        top: 10px;
+        border-left: 4px solid;
+        height: 100%;
+        width: 3px;
+      }
+
+      .timeframe.first::before{
+        top: 0px;
+        height: 150%;
+      }
+
+      .timeframe.last::before{
+        height:50%;
+      }
+
+      #nightColor{
+        color: black;
+      }
+      #astroColor{
+        color: #121654;
+      }
+      #blueColor{
+        color: blue;
+      }
+      #goldenColor{
+        color: orange;
+      }
+      #dayColor{
+        color: yellow;
+      }
+
+      #nightColor::after{
+        background-color: black;
+      }
+      #astroColor::after{
+        background-color: #121654;
+      }
+      #blueColor::after{
+        background-color: blue;
+      }
+      #goldenColor::after{
+        background-color: orange;
+      }
+      #dayColor::after{
+        background-color: yellow;
+      }
+
+      #nightColor::before{
+        border-left-color: black;
+      }
+      #astroColor::before{
+        border-left-color: #121654;
+      }
+      #blueColor::before{
+        border-left-color: blue;
+      }
+      #goldenColor::before{
+        border-left-color: orange;
+      }
+      #dayColor::before{
+        border-left-color: yellow;
+      }
+
+      .current-time{
+        font-size:25pt;
+        text-align: center;
+      }
+
+      .current-pos{
+        display: inline-block;
+        width: 45%;
+        text-align: center;
+      }
+
+      .sun-path{
+        width: 200px;
+        height: 100px;
+      }
+
+      .sun-path path{
+        fill: none;
+        stroke: #606060;
+        stroke-width: 2px;
+      }
+
+      .sun-circle{
+        fill: yellow;
+      }
+
+    }
+  }
+}
+
+.windy-plugin-sun-position.sun-position-dial{
+  position: absolute;
+  left: -99.5px;
+  top: 24.5px;
+  width: 199px;
+  height: 199px;
+
+  .dial-line-sun{
+    stroke: red;
+    stroke-width: 2;
+  }
+
+  .dial-line-sunrise, .dial-line-sunset{
+    stroke: orange;
+    stroke-width: 2;
+
+  }
+  #hover.dial-line-sunrise, #hover.dial-line-sunset{
+    stroke-width: 4;
+  }
 }
