@@ -2,7 +2,11 @@
 	<div class="mobile-header">Sun Details</div>
 
 	<div class="plugin-content">
-		<div class="sun-times">
+		<div class="open-picker">
+			<h2>Picker not open</h2>
+			Please open the weather picker to define position for sun-details.
+		</div>
+		<div class="sun-times" id="hide">
 			<span class="time-column" /><span class="timeframe first" id="nightColor">Nighttime</span><br />
 			<span class="time-column time-text" id=nightEnd>04:00</span><span class="time" id="astroColor">Astronomical Dawn</span><br />
 			<span class="time-column" /><span class="timeframe" id="astroColor">Astron. Twilight</span><br />
@@ -51,8 +55,8 @@
 
 		this.onopen = () => {
 			if (isOpen) return;
-			if (picker.getParams) {
-				isOpen = true;
+			isOpen = true;
+			if (!d3.select(".picker").empty() && d3.select(".picker").style("display") != "none") {
 				onPickerOpened()
 				redraw()
 			};
@@ -90,6 +94,9 @@
 				.on("mouseout", function(d) {
 				  d3.select(this).attr("id", "");
 				});
+
+			d3.select(".sun-times").attr("id", "")
+			d3.select(".open-picker").attr("id", "hide")
 		}
 
 		const redraw = () => {
@@ -191,15 +198,22 @@
 
 		// picker has been opened at latLon coords
 		picker.on('pickerOpened', latLon => {
+			if (!isOpen) return;
 			onPickerOpened()
 			redraw()
 		} )
 
 		// picker was dragged by user to latLon coords
-		picker.on('pickerMoved', latLon => {redraw()} )
+		picker.on('pickerMoved', latLon => {
+			if (!isOpen) return;
+			redraw()
+		} )
 
 		// picker was closed
-		//picker.on('pickerClosed', () => {})
+		picker.on('pickerClosed', () => {
+			d3.select(".sun-times").attr("id", "hide")
+			d3.select(".open-picker").attr("id", "")
+		})
 
 		store.on('timestamp', ts => {redraw()})
 

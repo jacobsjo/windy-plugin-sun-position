@@ -28,6 +28,10 @@
       color: white;
     }
 
+		.open-picker#hide, .sun-times#hide{
+			display: none;
+		}
+
     .sun-times{
 
       margin-left: 5px;
@@ -45,6 +49,10 @@
       span.time-column{
         width: 70px;
       }
+
+			span.time-text{
+				cursor: pointer;
+			}
 
       .time-minor{
         font-size: 11px;
@@ -175,12 +183,13 @@
   height: 199px;
 
   .dial-line-sun{
-    stroke: red;
-    stroke-width: 2;
+    stroke: rgba(68,65,65,0.84);;
+    stroke-width: 3;
   }
 
   .dial-line-sunrise, .dial-line-sunset{
-    stroke: orange;
+    stroke: rgba(68,65,65,0.84);
+		stroke-dasharray: 5;
     stroke-width: 2;
 
   }
