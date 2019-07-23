@@ -1,100 +1,25 @@
 <p align="center"><img src="https://www.windy.com/img/logo201802/logo-full-windycom-gray-v3.svg"></p>
 
-### Windy plugins
-This repository acts as an documentation, playground and boilerplate for your own Windy plugin.
+Windy plugin that gives shows sun position on the map and gives details about sunset and sunrise times. To use the published version, go to [windy.com](https://www.windy.com), open the menu, click on "Install Windy plugin", enter "windy-plugin-sun-position" and click "Load plugin".
 
-Therefore always **fork this repository** before editing it.
+To open the display, click on "More layers..." on the bottom right, then select "Sun Position" (Currently does not work on mobile). Then open a picker by clicking on the map (but not on a city name).
 
-Plugins are written in Javascript and published as npm package, so you already know how to create them
+### Sun dial
+The sun dial displays the current sun azimuth on the map using a black line from the picker position. Additionally, dashed lines show the azimuth of sunrise and sunset. Clicking on the sunrise or sunset line will set the current time to the sunrise or sunset time respectively.
+![Sun dial](pictures/sundial.jpg?raw=true "Sun dial")
 
-### Getting started
-Fork this repository and then clone it
+### Sun detail pane
+The sun detail pane on the left shows the time of astronomical, nautical, and civil dusk and dawn; start and end of golden hour and solar noon. Also, the current time and sun azimuth and altitude are displayed.
+![Sun detail pane](pictures/sundetail.jpg?raw=true "Sun detail pane")
+
+### Development
+If you want to use the development build clone this repository and run,
 ```sh
-git clone https://github.com/yourUsername/windy-plugins
-cd windy-plugins
 npm i
-npm start
+npm run start-dev
 ```
 Now open your browser browser at [https://localhost:9999/plugin.js](https://localhost:9999/plugin.js) to accept self signed SSL certificate.
 
-Then open your browser at [www.windy.com/dev](https://www.windy.com/dev) to test your plugin.
+Then open your browser at [www.windy.com/dev](https://www.windy.com/dev) to test the plugin.
 
-If it fails, make sure that your plugin is correctly built and accessible with your browser at [https://localhost:9999/plugin.js](https://localhost:9999/plugin.js).
-
-<p align="center"><img src="https://www.windy.com/img/windy-plugins/tutorial3.gif" width="80%"></p>
-
-### Tutorials
- - [Hello World](examples/01-hello-world)
- - [Left side window](examples/02-window-on-left-side)
- - [Right side window](examples/03-window-on-right-side)
- - [Boat tracker](examples/04-boat-tracker)
- - [Loading external library](examples/05-use-external-library)
- - [Use weather picker](examples/06-weather-picker)
- - [Working with multiple files](examples/07-multiple-files-plugin)
- - [Display CSV, GPX, KML, WKT and other](examples/08-display-csv-gpx-kml-formats)
- - [Interpolate weather values from a map](examples/09-reading-weather-values)
- - [Loading data from Windy API](examples/10-obtaining-meteorological-data)
-
-### Other resources
- - [How Windy Plugin work](docs/WINDY_PLUGIN.md)
- - [Windy API documentation](docs/WINDY_API.md)
- - [Leaflet 0.7.7 documentation](https://leafletjs.com/reference-0.7.7.html)
- - [List of Leaflet Plugins](https://leafletjs.com/plugins.html)
- - [Windy Plugins technical forum](https://community.windy.com/category/21/windy-plugins)
-
-### Compiling your plugin
-Our custom [Windy Plugin Compiler](docs/PLUGIN_COMPILER.md) does all the job for you. Just run `npm start` to launch it or `npm run start-dev` to skip beginner's prompt.
-
-### Publishing your plugin
- 1) Make sure, that your `package.json` is updated, and that:
-    + name, is unique name of your plugin
-    + description, describes what your plugin does
-    + author and repository reflects your name and where the plugin hosted is
- 2) Remove this `README.md` and put there few words about your plugin (and maybe some screenshot if you want). The text from README file will be used in our planned plugins gallery.
- 3) Publish your plugin as npm package by `npm publish`
- 4) Test your published npm package on [Windy's Plugin page](https://www.windy.com/plugins)
- 5) Let [us know in our community](https://community.windy.com/category/21/windy-plugins) about your new achievement
- 6) Commit your work and pull your repository back to GitHub. Rename your repository to reflect name of your plugin.
-
-### Conditions
-It is strictly prohibited to use plugin to:
- - Modify user's setting without his consent
- - Download any of user's settings, favorites or location to your server
- - Download any meteorological data from Windy to your own server or use them in any other scope than inside your plugin
- - Do any action that would harm our [privacy policy](https://www.windy.com/privacy)
-
-### Enterprise use
-We prepare **Windy Enterprise** project, that will enable to
- 1) Use private plugins (not published publicly)
- 2) Limit access to your data just to your invited users
- 3) Let us know if you want to be informed about this project
-
-### Things to remember
- - While providing coordinates to Leaflet can be done via object `{ lat, lng }` with **lng** property, Windy supports `{ lat, lon }` with **lon** property.
- - Using undocumented functions of Windy API can break your plugin, when we decide to upgrade our codes. If you miss something, rather [let us know here](https://community.windy.com/category/21/windy-plugins) and ask us to document and expose other features.
-
-### Technical support
-Drop a line in our [Windy Plugins section](https://community.windy.com/category/21/windy-plugins) of our Community forum.
-
-### ROADMAP
- - Initial release
- - Extend Windy API on a basis users requests
- - Create gallery of the most useful plugins
- - Create system so anyone can publish its own forecast/climatological model on Windy
-
-### CHANGELOG
-   * 0.5.0
-      - Remove ECMWF from `pluginDataLoader`
-   * 0.4.0
-      - Added `pluginDataLoader` to the Plugins API
-   * 0.3.0
-      - Examples moved to examples dir
-   * 0.2.0
-      - Fixed wrong examples
-   * 0.1.1
-      - Initial version of this repo
-
-<small>This is default readme - please do not remove this line</small>
-
-
-
+If it fails, make sure that the plugin is correctly built and accessible with your browser at [https://localhost:9999/plugin.js](https://localhost:9999/plugin.js).
