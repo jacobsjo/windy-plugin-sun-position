@@ -113,8 +113,9 @@
 		}
 
 		const movedPickerRedraw = () => {
+			redraw()
+
 			if (store.get('zuluMode')){
-				redraw()
 				return;
 			}
 
@@ -126,8 +127,10 @@
 			}
 
 			load('forecast', dataOptions).then( ({data}) => {
-				timeOffset = data.celestial.TZoffsetMin
-				redraw()
+				if (timeOffset != data.celestial.TZoffsetMin){
+					timeOffset = data.celestial.TZoffsetMin
+					redraw()
+				}
 			})
 		}
 
