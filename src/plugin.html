@@ -7,26 +7,27 @@
 			Please open the weather picker to define position for sun-details.
 		</div>
 		<div class="sun-times" id="hide">
-			<span class="time-column" /><span class="timeframe first" id="nightColor">Nighttime</span><br />
-			<span class="time-column time-text" id=nightEnd>04:00</span><span class="time" id="astroColor">Astronomical Dawn</span><br />
-			<span class="time-column" /><span class="timeframe" id="astroColor">Astron. Twilight</span><br />
-			<span class="time-column time-text" id=nauticalDawn>04:00</span><span class="time" id="blueColor">Nautical Dawn</span><br />
-			<span class="time-column" /><span class="timeframe" id="blueColor">Blue Hour</span><br />
-			<span class="time-column time-text" id=dawn>04:30</span><span class="time" id="goldenColor">Civil Dawn</span><br />
-			<span class="time-column" /><span class="timeframe" id="goldenColor">Golden Hour</span><br />
-			<span class="time-column time-text" id=sunrise>05:00</span><span class="time-minor" id="goldenColor">Sunrise</span><br />
-			<span class="time-column time-text" id=goldenHourEnd>05:30</span><span class="time" id="dayColor">&nbsp;</span><br />
-			<span class="time-column" /><span class="timeframe" id="dayColor">Daytime</span><br />
-			<span class="time-column time-text" id=solarNoon>12:00</span><span class="time-minor" id="dayColor">Solar Noon</span><br />
-			<span class="time-column time-text" id=goldenHour>18:00</span><span class="time" id="goldenColor">&nbsp;</span><br />
-			<span class="time-column" /><span class="timeframe" id="goldenColor">Golden Hour</span><br />
-			<span class="time-column time-text" id=sunset>18:30</span><span class="time-minor" id="goldenColor">Sunset</span><br />
-			<span class="time-column time-text" id=dusk>19:00</span><span class="time" id="blueColor">Civil Dusk</span><br />
-			<span class="time-column" /><span class="timeframe" id="blueColor">Blue Hour</span><br />
-			<span class="time-column time-text" id=nauticalDusk>19:30</span><span class="time" id="astroColor">Nautical Dusk</span><br />
-			<span class="time-column" /><span class="timeframe" id="astroColor">Astron. Twilight</span><br />
-			<span class="time-column time-text" id=night>19:30</span><span class="time" id="nightColor">Astronomical Dusk</span><br />
-			<span class="time-column" /><span class="timeframe last" id="nightColor">Nighttime</span><br />
+			<div class="if-exists" id=nightTime><span class="time-column" /><span class="timeframe" id="nightColor">Nighttime</span></div>
+			<div class="if-exists" id=nightEnd><span class="time-column time-text" id=nightEnd>04:00</span><span class="time" id="astroColor">Astronomical Dawn</span></div>
+			<div class="if-exists" id=astroTime><span class="time-column" /><span class="timeframe" id="astroColor">Astron. Twilight</span></div>
+			<div class="if-exists" id=nauticalDawn><span class="time-column time-text" id=nauticalDawn>04:00</span><span class="time" id="blueColor">Nautical Dawn</span></div>
+			<div class="if-exists" id=blueTime><span class="time-column" /><span class="timeframe" id="blueColor">Blue Hour</span></div>
+			<div class="if-exists" id=dawn><span class="time-column time-text" id=dawn>04:30</span><span class="time" id="goldenColor">Civil Dawn</span></div>
+			<div class="if-exists" id=goldenTime><span class="time-column" /><span class="timeframe" id="goldenColor">Golden Hour</span></div>
+			<div class="if-exists" id=sunrise><span class="time-column time-text" id=sunrise>05:00</span><span class="time-minor" id="goldenColor">Sunrise</span></div>
+			<div class="if-exists" id=goldenHourEnd><span class="time-column time-text" id=goldenHourEnd>05:30</span><span class="time" id="dayColor">&nbsp;</span></div>
+			<div class="if-exists" id=dayTime><span class="time-column" /><span class="timeframe" id="dayColor">Daytime</span></div>
+			<div class="if-exists" id=dayTime><span class="time-column time-text" id=solarNoon>12:00</span><span class="time-minor" id="dayColor">Solar Noon</span></div>
+			<div class="if-exists" id=solarNoonGolden><span class="time-column time-text" id=solarNoon>12:00</span><span class="time-minor" id="goldenColor">Solar Noon</span></div>
+			<div class="if-exists" id=goldenHour><span class="time-column time-text" id=goldenHour>18:00</span><span class="time" id="goldenColor">&nbsp;</span></div>
+			<div class="if-exists" id=goldenTime2><span class="time-column" /><span class="timeframe" id="goldenColor">Golden Hour</span></div>
+			<div class="if-exists" id=sunset><span class="time-column time-text" id=sunset>18:30</span><span class="time-minor" id="goldenColor">Sunset</span></div>
+			<div class="if-exists" id=dusk><span class="time-column time-text" id=dusk>19:00</span><span class="time" id="blueColor">Civil Dusk</span></div>
+			<div class="if-exists" id=blueTime2><span class="time-column" /><span class="timeframe" id="blueColor">Blue Hour</span></div>
+			<div class="if-exists" id=nauticalDusk><span class="time-column time-text" id=nauticalDusk>19:30</span><span class="time" id="astroColor">Nautical Dusk</span></div>
+			<div class="if-exists" id=astroTime2><span class="time-column" /><span class="timeframe" id="astroColor">Astron. Twilight</span></div>
+			<div class="if-exists" id=night><span class="time-column time-text" id=night>19:30</span><span class="time" id="nightColor">Astronomical Dusk</span></div>
+			<div class="if-exists" id=nightTime2><span class="time-column" /><span class="timeframe" id="nightColor">Nighttime</span></div>
 
 			<div class="current-time" id=current_time>12:25</div>
 			<span class="current-pos">Azimuth</span>
@@ -174,11 +175,36 @@
 				sunsetLine.attr("x2", 100 - Math.sin(sunsetPos.azimuth) * lineLength).attr("y2", 100 + Math.cos(sunsetPos.azimuth) * lineLength)
 			}
 
+			var minAltitude = SunCalc.getPosition(times.nadir, lat, lon).altitude * 180 / Math.PI
+			var maxAltitude = SunCalc.getPosition(times.solarNoon, lat, lon).altitude * 180 / Math.PI
+
+			times['nightTime'] = (minAltitude < -17.9)
+			times['astroTime'] = (minAltitude < -11.9) && (maxAltitude >= -17.9)
+			times['blueTime'] = (minAltitude < -5.9) && (maxAltitude >= -11.9)
+			times['goldenTime'] = (minAltitude < 6.1) && (maxAltitude >= -5.9)
+			times['dayTime'] = (maxAltitude >= 6.1)
+			times['solarNoonGolden'] = (maxAltitude >= -0.7) && (maxAltitude < 6.1)
+
+			times['nightTime2'] = times['nightTime'] && times['astroTime']
+			times['astroTime2'] = times['astroTime'] && times['blueTime']
+			times['blueTime2'] = times['blueTime'] && times['goldenTime']
+			times['goldenTime2'] = times['goldenTime'] && times['dayTime']
+
 			//set text and onClick handler for all sidebar times
 			Array.prototype.forEach.call(document.getElementsByClassName('time-text'), t => {
 				t.innerHTML = time_format(times[t.id])
 				t.onclick = () => setTime(t.id)
 			})
+
+			//set text and onClick handler for all sidebar times
+			Array.prototype.forEach.call(document.getElementsByClassName('if-exists'), t => {
+				if (isNaN(times[t.id]) || times[t.id] == false){
+					t.className = 'if-exists hide'
+				} else {
+					t.className = 'if-exists'
+				}
+			})
+
 
 			document.getElementById('current_time').innerHTML = time_format(new Date(time))
 			document.getElementById('azimuth').innerHTML = (sunPos.azimuth*180/Math.PI).toFixed(1) + "&deg;"

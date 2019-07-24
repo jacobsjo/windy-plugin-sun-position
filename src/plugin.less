@@ -38,6 +38,10 @@
       margin-right: 5px;
       margin-top: 10px;
 
+			.if-exists.hide{
+				display: none;
+			}
+
       span{
         position:relative;
         left: 20px;
@@ -82,19 +86,10 @@
         content:"";
         position: absolute;
         left: -15px; /* adjust manually */
-        top: 10px;
-        border-left: 4px solid;
-        height: 100%;
-        width: 3px;
-      }
-
-      .timeframe.first::before{
         top: 0px;
-        height: 150%;
-      }
-
-      .timeframe.last::before{
-        height:50%;
+        border-left: 4px solid;
+        height: 120%;
+        width: 3px;
       }
 
       #nightColor{
@@ -194,7 +189,7 @@
     stroke-width: 2;
 		pointer-events: auto;
   }
-	
+
   #hover.dial-line-sunrise, #hover.dial-line-sunset{
     stroke-width: 4;
   }
