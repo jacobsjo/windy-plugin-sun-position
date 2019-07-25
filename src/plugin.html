@@ -40,7 +40,6 @@
 				<path id=horizon d="M 0 50 H 200" />
 				<circle class=sun-circle id=sun cx="50" cy="50" r="4"/>
 			</svg>
-
 		</div>
 	</div>
 
@@ -70,6 +69,7 @@
 				onPickerOpened()
 				movedPickerRedraw()
 			};
+
 		}
 
 		this.onclose = () => {
@@ -91,8 +91,12 @@
 		var useUTC = false
 
 		const onPickerOpened = () => {
+
+			d3.select(".picker").select("svg").remove() // just to be save that there will never be multiple svg's attached to the .picker
 			var p = d3.select(".picker")
-			svg = p.append("svg").attr("class", "windy-plugin-sun-position sun-position-dial")
+			svg = p.append("svg")
+				.attr("class", "windy-plugin-sun-position sun-position-dial")
+				.attr("viewBox", "0 0 199 199")
 			sunriseLine = svg.append("line").attr("class", "dial-line dial-line-sunrise")
 				.attr("x1", 100).attr("y1", 100).attr("x2", 100).attr("y2", 100).on("click", function(d) {setTime("sunrise")})
 			sunsetLine = svg.append("line").attr("class", "dial-line dial-line-sunset")
@@ -282,6 +286,8 @@
 		picker.on('pickerClosed', () => {
 			d3.select(".sun-times").attr("id", "hide")
 			d3.select(".open-picker").attr("id", "")
+
+			d3.select(".picker").select("svg").remove()
 		})
 
 		store.on('timestamp', ts => {redraw()})

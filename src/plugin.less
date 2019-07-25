@@ -1,7 +1,7 @@
 
 @import 'dev/variables.less';
 
-@widthOfMyPlugin: 250px;
+@widthOfMyPlugin: 270px;
 
 .onwindy-plugin-sun-position {
 
@@ -14,11 +14,41 @@
 	}
 }
 
+#device-mobile .onwindy-plugin-sun-position {
+	.left-border {
+		left: 0;
+	}
+}
+
+#device-mobile #bottom {
+	z-index: 2; // makes timeline apear on top of pane in mobile
+}
+
+.plugin-sun-position-mobile{
+   position:absolute;
+   top:250px;
+   bottom:0px;
+   width:100% !important;
+}
+
+#device-mobile #windy-plugin-sun-position{
+	.plugin-content .sun-times{
+		margin-bottom: 100px;  // enables scrolling further down on mobile as timeline overlaps pane
+	}
+
+	.closing-x{  //show closing x on custom mobile pane
+		display: block;
+		right: 0px;
+		top: -1em;
+	}
+}
+
+
 #windy-plugin-sun-position {
 	width: @widthOfMyPlugin;
 
 	.plugin-content {
-    padding: 20px 15px 15px 15px;
+    padding: 15px 15px 15px 5px;
     font-size: 14px;
     line-height: 1.6;
     background-color: #404040;
@@ -34,9 +64,10 @@
 
     .sun-times{
 
-      margin-left: 5px;
-      margin-right: 5px;
+			width: 250px;
       margin-top: 10px;
+			margin-left: auto;
+			margin-right: auto;
 
 			.if-exists.hide{
 				display: none;
@@ -154,6 +185,7 @@
       .sun-path{
         width: 200px;
         height: 100px;
+				margin-left: 25px;
       }
 
       .sun-path path{
@@ -170,10 +202,12 @@
   }
 }
 
+
+
 .windy-plugin-sun-position.sun-position-dial{
   position: absolute;
   left: -99.5px;
-  top: 24.5px;
+  top: 25.5px;
   width: 199px;
   height: 199px;
 	pointer-events: none;
@@ -193,4 +227,20 @@
   #hover.dial-line-sunrise, #hover.dial-line-sunset{
     stroke-width: 4;
   }
+}
+
+#device-mobile .windy-plugin-sun-position.sun-position-dial{
+	top: 0.5px;
+	left: -69.5px;
+	width: 139px;
+	height: 139px;
+
+	.dial-line-sun{
+		stroke-width: 5;
+	}
+
+	.dial-line-sunrise, .dial-line-sunset{
+		stroke-width: 4;
+	}
+
 }
