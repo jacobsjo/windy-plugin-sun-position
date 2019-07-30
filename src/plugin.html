@@ -8,27 +8,6 @@
 		</div>
 		<div class="sun-times" id="hide">
 			<div class="timeline"></div>
-			<!-- <div class="if-exists" id=nightTime><span class="time-column" /><span class="timeframe" id="nightColor">Nighttime</span></div>
-			<div class="if-exists" id=nightEnd><span class="time-column time-text" id=nightEnd>04:00</span><span class="time" id="astroColor">Astronomical Dawn</span></div>
-			<div class="if-exists" id=astroTime><span class="time-column" /><span class="timeframe" id="astroColor">Astron. Twilight</span></div>
-			<div class="if-exists" id=nauticalDawn><span class="time-column time-text" id=nauticalDawn>04:00</span><span class="time" id="blueColor">Nautical Dawn</span></div>
-			<div class="if-exists" id=blueTime><span class="time-column" /><span class="timeframe" id="blueColor">Blue Hour</span></div>
-			<div class="if-exists" id=dawn><span class="time-column time-text" id=dawn>04:30</span><span class="time" id="goldenColor">Civil Dawn</span></div>
-			<div class="if-exists" id=goldenTime><span class="time-column" /><span class="timeframe" id="goldenColor">Golden Hour</span></div>
-			<div class="if-exists" id=sunrise><span class="time-column time-text" id=sunrise>05:00</span><span class="time-minor" id="goldenColor">Sunrise</span></div>
-			<div class="if-exists" id=goldenHourEnd><span class="time-column time-text" id=goldenHourEnd>05:30</span><span class="time" id="dayColor">&nbsp;</span></div>
-			<div class="if-exists" id=dayTime><span class="time-column" /><span class="timeframe" id="dayColor">Daytime</span></div>
-			<div class="if-exists" id=dayTime><span class="time-column time-text" id=solarNoon>12:00</span><span class="time-minor" id="dayColor">Solar Noon</span></div>
-			<div class="if-exists" id=solarNoonGolden><span class="time-column time-text" id=solarNoon>12:00</span><span class="time-minor" id="goldenColor">Solar Noon</span></div>
-			<div class="if-exists" id=goldenHour><span class="time-column time-text" id=goldenHour>18:00</span><span class="time" id="goldenColor">&nbsp;</span></div>
-			<div class="if-exists" id=goldenTime2><span class="time-column" /><span class="timeframe" id="goldenColor">Golden Hour</span></div>
-			<div class="if-exists" id=sunset><span class="time-column time-text" id=sunset>18:30</span><span class="time-minor" id="goldenColor">Sunset</span></div>
-			<div class="if-exists" id=dusk><span class="time-column time-text" id=dusk>19:00</span><span class="time" id="blueColor">Civil Dusk</span></div>
-			<div class="if-exists" id=blueTime2><span class="time-column" /><span class="timeframe" id="blueColor">Blue Hour</span></div>
-			<div class="if-exists" id=nauticalDusk><span class="time-column time-text" id=nauticalDusk>19:30</span><span class="time" id="astroColor">Nautical Dusk</span></div>
-			<div class="if-exists" id=astroTime2><span class="time-column" /><span class="timeframe" id="astroColor">Astron. Twilight</span></div>
-			<div class="if-exists" id=night><span class="time-column time-text" id=night>19:30</span><span class="time" id="nightColor">Astronomical Dusk</span></div>
-			<div class="if-exists" id=nightTime2><span class="time-column" /><span class="timeframe" id="nightColor">Nighttime</span></div> -->
 
 			<div class="current">
 				<div class="current-time" id=current_time>12:25</div>
@@ -43,11 +22,11 @@
 					<circle class=sun-circle id=sun cx="50" cy="50" r="4"/>
 				</svg>
 			</div>
-
-			<div class="footnote">
-				windy-plugin-sun-position v. 0.2.1 by Jochen Jacobs (@jacobsjo) <br />
-				calculations by SunCalc
-			</div>
+		</div>
+		<div class="footnote">
+			<a href="https://community.windy.com/topic/9017/sun-position-plugin">plugin page</a>&nbsp;&nbsp;&nbsp;<a href="https://www.npmjs.com/package/windy-plugin-sun-position">npm</a>&nbsp;&nbsp;&nbsp;<a href="https://github.com/jacobsjo/windy-plugin-sun-position">GitHub</a><br />
+			windy-plugin-sun-position@0.2.1 <br />
+			by Jochen Jacobs (@jacobsjo) <br />
 		</div>
 	</div>
 
@@ -240,11 +219,11 @@
 			}
 
 			//add first time to timeline (time 0 puts it at front during sorting and hides element from being rendered individually)
-			timeline.push({time: 0, name: undefined, starts: firstConfig.starts, color_class: undefined, new_class: firstConfig.new_class})
+			timeline.push({time: 0, name: undefined, raw_name: undefined, starts: firstConfig.starts, color_class: undefined, new_class: firstConfig.new_class})
 
-			for (var time in times){
-				if (sunTimesConfig[time] && !isNaN(times[time])){
-					timeline.push({time: times[time], name: sunTimesConfig[time].name, starts: sunTimesConfig[time].starts, class: sunTimesConfig[time].class, new_class: sunTimesConfig[time].new_class})
+			for (var timeName in times){
+				if (sunTimesConfig[timeName] && !isNaN(times[timeName])){
+					timeline.push({time: times[timeName], name: sunTimesConfig[timeName].name, raw_name: timeName, starts: sunTimesConfig[timeName].starts, class: sunTimesConfig[timeName].class, new_class: sunTimesConfig[timeName].new_class})
 				}
 			}
 
@@ -266,6 +245,7 @@
 					var tle = tlo.append("div").attr("class", "timeline-entry timestamp " + (timeline[i].class ? timeline[i].class + " " : "") + current_class) // add timeline entry
 					tle.append("span").attr("class", "time-column").html(time_format(timeline[i].time)) // add time column
 					tle.append("span").attr("class", "name-column").html(timeline[i].name)
+					tle.data([timeline[i].raw_name]).on("click", function(d){setTime(d)})
 				}
 
 				if (timeline[i].starts){
@@ -276,9 +256,13 @@
 			}
 
 
+			//===== update current time and data
+			document.getElementById('current_time').innerHTML = time_format(new Date(time))
+			document.getElementById('azimuth').innerHTML = (sunPos.azimuth*180/Math.PI).toFixed(1) + "&deg;"
+			document.getElementById('altitude').innerHTML = (sunPos.altitude*180/Math.PI).toFixed(1) + "&deg;"
 
 			//===== draw altitude diagram =====
-			/*
+
 			var data = []
 
 			var t = new Date(time).setUTCHours(0,-timeOffset,0,0)
@@ -301,7 +285,7 @@
 			// set current sun position (yellow circle)
 			d3.select('#sun')
 			.attr('cx', (time - t)*200.0/(24.0*60*60*1000) % 200)
-			.attr('cy', (-sunPos.altitude+Math.PI/2) * 100/Math.PI )*/
+			.attr('cy', (-sunPos.altitude+Math.PI/2) * 100/Math.PI )
 
 		}
 

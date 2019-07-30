@@ -32,14 +32,18 @@
 }
 
 #device-mobile #windy-plugin-sun-position{
-	.plugin-content .sun-times{
-		margin-bottom: 100px;  // enables scrolling further down on mobile as timeline overlaps pane
+	.plugin-content .footnote{
+		margin-bottom: 90px;  // enables scrolling further down on mobile as timeline overlaps pane
 	}
 
 	.closing-x{  //show closing x on custom mobile pane
 		display: block;
 		right: 0px;
 		top: -1em;
+	}
+
+	.open-picker, .sun-times{
+		min-height: calc(100% - 120pt);
 	}
 }
 
@@ -58,6 +62,10 @@
       color: white;
     }
 
+		.open-picker, .sun-times{
+			min-height: calc(100% - 50pt);
+		}
+
 		.open-picker#hide, .sun-times#hide{
 			display: none;
 		}
@@ -69,14 +77,30 @@
 			margin-left: auto;
 			margin-right: auto;
 
-			.if-exists.hide{
-				display: none;
-			}
 
 			.timeline-entry{
 				position: relative;
 			}
 
+			// format all spans as inline-blocks
+			.timeline-entry span{
+        left: 20px;
+        display: inline-block;
+        margin-bottom: 0;
+        padding-bottom: 0.5em;
+      }
+
+			// pointer when clickable
+			.timeline-entry.timestamp{
+				cursor: pointer;
+			}
+
+			// default cursor if not clickable (no text cursor)
+			.timeline-entry.timeframe{
+				cursor: default;
+			}
+
+			// circles on timestamps
       .timeline-entry.timestamp::after{
         display: block;
         position: absolute;
@@ -88,9 +112,8 @@
         content: ' ';
       }
 
+			// smaller circles on minor timestamps
 			.timeline-entry.timestamp.minor::after{
-				display: block;
-				position: absolute;
 				left: 65px;
 				top: 2px;
 				width: 16px;
@@ -98,7 +121,7 @@
 				border-radius: 8px;
 			}
 
-
+			// line of timeline
       .timeline-entry::before{
         content:"";
         position: absolute;
@@ -109,13 +132,15 @@
         width: 3px;
       }
 
+			// format of times left of timeline
 			.time-column{
 				width: 90px;
 				text-align: right;
 				padding-right: 35px;
-				color: white;
+				color: white; // keep time white
 			}
 
+			// colors of text
       .nightColor{
         color: black;
       }
@@ -132,6 +157,7 @@
         color: yellow;
       }
 
+			// colors of circles
       .nightColor::after{
         background-color: black;
       }
@@ -148,6 +174,7 @@
         background-color: yellow;
       }
 
+			// colors of timeline
       .nightColor::before{
         border-left-color: black;
       }
@@ -164,12 +191,6 @@
         border-left-color: yellow;
       }
 
-			span{
-        left: 20px;
-        display: inline-block;
-        margin-bottom: 0;
-        padding-bottom: 0.5em;
-      }
 
 
 
@@ -202,6 +223,19 @@
       }
 
     }
+
+		.footnote{
+			color: gray;
+			font-size: 8pt;
+			width: 150pt;
+
+			margin-left: auto;
+			margin-right: auto;
+
+			a{
+				text-decoration: underline;
+			}
+		}
   }
 }
 
