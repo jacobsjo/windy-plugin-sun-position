@@ -140,14 +140,6 @@ async function build() {
 	// Compile less - feel free to code your SCSS here
 	let css = await compileLess()
 
-	// Load source code of a plugin
-	const tagSrc = await fs.readFile( join(srcDir,'plugin.html'),'utf8')
-
-	// Compile it via riot compiler
-	// See: https://github.com/riot/compiler
-	const [ compiled ] = riot.compile(tagSrc,riotOpts)
-	let { html, js, imports } = compiled
-
 	const options = Object.assign({},{
 		name,
 		version,
@@ -157,7 +149,18 @@ async function build() {
 		config,
 	)
 
+	// Load source code of a plugin
+	const tagSrc = await fs.readFile( join(srcDir,'plugin.html'),'utf8')
+
+	// Compile it via riot compiler
+	// See: https://github.com/riot/compiler
+	const [ compiled ] = riot.compile(tagSrc,riotOpts)
+	let { html, js, imports } = compiled
+
+
 	const internalModules = {}
+
+	js = `\tconst plugin_version = "${ version }";\n${ js }`
 
 	//
 	// Rewrite imports into W.require
