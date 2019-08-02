@@ -7,20 +7,42 @@
 			Please open the weather picker to define position for sun-details.
 		</div>
 		<div class="sun-times" id="hide">
+			<div class="options">
+				<span class="image-checkbox" id="astroSun" title="Show sun details (astronomical)">&#x1f52d;</span>&nbsp;
+				<span class="image-checkbox" id="photoSun" title="Show sun details (photography)">&#x1f4f7;</span>&nbsp;
+				<span class="image-checkbox" id="moon" title="Show moon details">&#x263E;</span>
+			</div>
 			<div class="timeline"></div>
 
 			<div class="current">
 				<div class="current-time" id=current_time>12:25</div>
-				<span class="current-pos">Azimuth</span>
-				<span class="current-pos">Altitude</span><br />
-				<span class="current-pos" id=azimuth>0</span>
-				<span class="current-pos" id=altitude>0</span>
-
 				<svg class="sun-path">
 					<path id=sun_path />
+					<path id=moon_path />
 					<path id=horizon d="M 0 50 H 200" />
-					<circle class=sun-circle id=sun cx="50" cy="50" r="4"/>
+					<circle class=path-circle id=moon cx="50" cy="50" r="4"/>
+					<circle class=path-circle id=sun cx="50" cy="50" r="4"/>
 				</svg>
+
+				<div class="current-sun">
+					<span class="current-pos-title" id="sun">Sun</span><br />
+					<span class="current-pos-label">Azimuth</span>
+					<span class="current-pos" id=azimuth>0</span>
+					<span class="current-pos-label">Altitude</span>
+					<span class="current-pos" id=altitude>0</span>
+				</div>
+				<div class="current-moon">
+					<span class="current-pos-title" id="moon">Moon</span><br />
+					<span class="current-pos-label">Azimuth</span>
+					<span class="current-pos" id=azimuth-moon>0</span>
+					<span class="current-pos-label">Altitude</span>
+					<span class="current-pos" id=altitude-moon>0</span>
+					<span class="current-pos-label">Phase</span>
+					<span class="current-pos" id=phase-moon>full moon</span>
+					<span class="current-pos-label">Illumination</span>
+					<span class="current-pos" id=fraction-moon>100%</span>
+				</div>
+
 			</div>
 		</div>
 		<div class="footnote">
@@ -39,6 +61,7 @@
 
 		//const plugin_version = "0.2.1"  //DO NOT REMOVE COMENT FROM THIS LINE: this line is added automatically by the compiler!
 
+		const mod = (x, n) => (x % n + n) % n
 		const options = {
 			key: 'nMvpXdWHi4CcsJ6N0ewIYEcU0VE9ONMX',
 			plugin: 'windy-plugin-sun-position'
@@ -47,33 +70,113 @@
 		const load = pluginDataLoader( options )
 		const lineLength = 80
 
-		const sunTimesConfig = {
-			"nightEnd": {name: "Astronomical Dawn", starts:"Astronomical Twilight", new_class:"astroColor"},
-			"nauticalDawn": {name: "Nautical Dawn", starts:"Blue Hour", new_class:"blueColor"},
-			"dawn": {name: "Civil Dawn", starts:"Golden Hour", new_class:"goldenColor"},
+		const sunTimesConfigPhotography = {
+			"dawn": {starts:"Blue Hour", new_class:"blueColor"},
+			"blueHourEnd": {starts:"Golden Hour", new_class:"goldenColor"},
 			"sunrise": {name: "Sunrise", class: "minor"},
 			"goldenHourEnd": {starts:"Daytime", new_class:"dayColor"},
 			"solarNoon": {name: "Solar Noon", class: "minor"},
 			"goldenHour": {starts: "Golden Hour", new_class:"goldenColor"},
 			"sunset": {name: "Sunset", class: "minor"},
-			"dusk": {name: "Civil Dusk", starts: "Blue Hour", new_class:"blueColor"},
-			"nauticalDusk": {name: "Nautical Dusk", starts: "Astronomical Twilight", new_class: "astroColor"},
-			"night": {name: "Astronomical Dusk", starts: "Nighttime", new_class: "nightColor"}
+			"blueHour": {starts: "Blue Hour", new_class:"blueColor"},
+			"dusk": {starts: "Nighttime", new_class:"nightColor"},
+			"first": [
+				{altitude: -90, starts: "Nighttime", new_class:"nightColor"},
+				{altitude: -6, starts: "Blue Hour", new_class:"blueColor"},
+				{altitude: -4, starts: "Golden Hour", new_class:"goldenColor"},
+				{altitude: 6, starts: "Daytime", new_class:"dayColor"}
+			]
 		}
 
-		const firstTimeConfig = [
-			{altitude: -90, starts: "Nighttime", new_class:"nightColor"},
-			{altitude: -18, starts: "Astronomical Twilight", new_class:"astroColor"},
-			{altitude: -12, starts: "Blue Hour", new_class:"blueColor"},
-			{altitude: -6, starts: "Golden Hour", new_class:"goldenColor"},
-			{altitude: 6, starts: "Daytime", new_class:"dayColor"}
-		]
+		const sunTimesConfigAstonomical = {
+			"nightEnd": {name: "Astronomical Dawn", starts:"Astronomical Twilight", new_class:"astroColor"},
+			"nauticalDawn": {name: "Nautical Dawn", starts:"Nautical Twilight", new_class:"nauticalColor"},
+			"dawn": {name: "Civil Dawn", starts:"Civil Twilight", new_class:"blueColor"},
+			"sunrise": {name: "Sunrise", starts:"Daytime", new_class: "dayColor"},
+			"solarNoon": {name: "Solar Noon", class: "minor"},
+			"sunset": {name: "Sunset", starts:"Civil Twilight", new_class: "blueColor"},
+			"dusk": {name: "Civil Dusk", starts: "Nautical Twilight", new_class:"nauticalColor"},
+			"nauticalDusk": {name: "Nautical Dusk", starts: "Astronomical Twilight", new_class: "astroColor"},
+			"night": {name: "Astronomical Dusk", starts: "Nighttime", new_class: "nightColor"},
+			"first": [
+				{altitude: -90, starts: "Nighttime", new_class:"nightColor"},
+				{altitude: -18, starts: "Astronomical Twilight", new_class:"astroColor"},
+				{altitude: -12, starts: "Nautical Twilight", new_class:"nauticalColor"},
+				{altitude: -6, starts: "Civil Twilight", new_class:"blueColor"},
+				{altitude: -0.833, starts: "Daytime", new_class:"dayColor"}
+			]
+		}
+
+		const sunTimesConfigCombinded = {
+			"nightEnd": {name: "Astronomical Dawn", starts:"Astronomical Twilight", new_class:"astroColor"},
+			"nauticalDawn": {name: "Nautical Dawn", starts:"Nautical Twilight", new_class:"nauticalColor"},
+			"dawn": {name: "Civil Dawn", starts:"Blue Hour", new_class:"blueColor"},
+			"blueHourEnd": {starts:"Golden Hour", new_class:"goldenColor"},
+			"sunrise": {name: "Sunrise", class: "minor"},
+			"goldenHourEnd": {starts:"Daytime", new_class:"dayColor"},
+			"solarNoon": {name: "Solar Noon", class: "minor"},
+			"goldenHour": {starts: "Golden Hour", new_class:"goldenColor"},
+			"sunset": {name: "Sunset", class: "minor"},
+			"blueHour": {starts: "Blue Hour", new_class:"blueColor"},
+			"dusk": {name: "Civil Dusk", starts: "Nautical Twilight", new_class:"nauticalColor"},
+			"nauticalDusk": {name: "Nautical Dusk", starts: "Astronomical Twilight", new_class: "astroColor"},
+			"night": {name: "Astronomical Dusk", starts: "Nighttime", new_class: "nightColor"},
+			"first": [
+				{altitude: -90, starts: "Nighttime", new_class:"nightColor"},
+				{altitude: -18, starts: "Astronomical Twilight", new_class:"astroColor"},
+				{altitude: -12, starts: "Nautical Twilight", new_class:"nauticalColor"},
+				{altitude: -6, starts: "Blue Hour", new_class:"blueColor"},
+				{altitude: -4, starts: "Golden Hour", new_class:"goldenColor"},
+				{altitude: 6, starts: "Daytime", new_class:"dayColor"}
+			]
+		}
+
+		const sunTimesConfigNone = {
+			"first": [
+				{altitude: -90, starts: " ", new_class:"nightColor"},
+			]
+		}
+
+		const moonTimesConfig = {
+			"rise": {name: "Moonrise", class: "moon"},
+			"set": {name: "Moonset", class: "moon"}
+		}
+
+		const quarterOffet = 0.01 //maximal distance from quater moon (including new and full moon) to be considered at quater (in oppose to in between quaters)
+
+		const moonPhases = []
+		moonPhases[0] = "New Moon"
+		moonPhases[quarterOffet] = "Waxin Crescent"
+		moonPhases[0.25-quarterOffet] = "First Quarter",
+		moonPhases[0.25+quarterOffet] = "Waxin Gibbous",
+		moonPhases[0.5-quarterOffet] = "Full Moon",
+		moonPhases[0.5+quarterOffet] = "Waning Gibbous",
+		moonPhases[0.75-quarterOffet] = "Last Quarter",
+		moonPhases[0.75+quarterOffet] = "Waning Crescent",
+		moonPhases[1-quarterOffet] =  "New Moon"
 
 		var isOpen = false;
+
+		var plugin_options = {
+			"photoSun": true,
+			"astroSun": true,
+			"moon": true
+		}
+
+		SunCalc.addTime(-4, "blueHourEnd", "blueHour")
+
+		d3.selectAll("#windy-plugin-sun-position .options .image-checkbox").on("click", function() {
+			var checkbox = d3.select(this);
+			plugin_options[checkbox.attr("id")] = checkbox.classed("off")
+			checkbox.classed("off", !checkbox.classed("off"));
+			redraw();
+		})
 
 		this.onopen = () => {
 			if (isOpen) return;
 			isOpen = true;
+
+
 
 			if (!d3.select(".picker").empty() && d3.select(".picker").style("display") != "none") {
 				onPickerOpened()
@@ -95,9 +198,16 @@
 		}
 
 		var svg
+
 		var sunLine
 		var sunriseLine
 		var sunsetLine
+		var sunCircle
+
+		var moonLine
+		var moonriseLine
+		var moonsetLine
+		var moonCircle
 
 		var timeOffset = 0
 		var useUTC = false
@@ -115,8 +225,21 @@
 				.attr("x1", 100).attr("y1", 100).attr("x2", 100).attr("y2", 100).on("click", function(d) {setTime("sunrise")})
 			sunsetLine = svg.append("line").attr("class", "dial-line dial-line-sunset")
 				.attr("x1", 100).attr("y1", 100).attr("x2", 100).attr("y2", 100).on("click", function(d) {setTime("sunset")})
+
+			moonriseLine = svg.append("line").attr("class", "dial-line dial-line-moonrise")
+				.attr("x1", 100).attr("y1", 100).attr("x2", 100).attr("y2", 100).on("click", function(d) {setTime("moonrise")})
+			moonsetLine = svg.append("line").attr("class", "dial-line dial-line-moonset")
+				.attr("x1", 100).attr("y1", 100).attr("x2", 100).attr("y2", 100).on("click", function(d) {setTime("moonset")})
+
+			moonLine = svg.append("line").attr("class", "dial-line dial-line-moon")
+				.attr("x1", 100).attr("y1", 100).attr("x2", 100).attr("y2", 100)
+			moonCircle = svg.append("circle").attr("class", "dial-circle dial-circle-moon")
+				.attr("r", 4).attr("cx", 100).attr("cy", 100)
 			sunLine = svg.append("line").attr("class", "dial-line dial-line-sun")
 				.attr("x1", 100).attr("y1", 100).attr("x2", 100).attr("y2", 100)
+			sunCircle = svg.append("circle").attr("class", "dial-circle dial-circle-sun")
+				.attr("r", 4).attr("cx", 100).attr("cy", 100)
+
 
 			//set hover classes
 			d3.selectAll(".dial-line")
@@ -155,6 +278,9 @@
 			})
 		}
 
+		var times
+		var moonTimes
+
 		// update drawing and timeline
 		const redraw = () => {
 
@@ -169,15 +295,27 @@
 			var time = store.get('timestamp')
 
 			// get sun directions
-			var times = SunCalc.getTimes(time, lat, lon)
+			times = SunCalc.getTimes(time, lat, lon)
 			var sunPos = SunCalc.getPosition(time, lat, lon)
 			var sunrisePos = SunCalc.getPosition(times.sunrise, lat, lon)
 			var sunsetPos = SunCalc.getPosition(times.sunset, lat, lon)
 
-			var sunLineLength
-			var sunLineOpacity
+			// get moon directions
+
+			var moonTimes1 = SunCalc.getMoonTimes(times.nadir.getTime(), lat, lon) // moon times of first day
+			var moonTimes2 = SunCalc.getMoonTimes(times.nadir.getTime() + 24*60*60*1000, lat, lon) // moon times of second day
+
+			moonTimes = {}
+			moonTimes.rise = (moonTimes1.rise >= times.nadir.getTime()) ? moonTimes1.rise : ((moonTimes2.rise <= times.nadir.getTime() + 24*60*60*1000) ? moonTimes2.rise : NaN)
+			moonTimes.set  = (moonTimes1.set  >= times.nadir.getTime()) ? moonTimes1.set  : ((moonTimes2.set  <= times.nadir.getTime() + 24*60*60*1000) ? moonTimes2.set  : NaN)
+			var moonPos = SunCalc.getMoonPosition(time, lat, lon)
+			var moonrisePos = SunCalc.getMoonPosition(moonTimes.rise, lat, lon)
+			var moonsetPos = SunCalc.getMoonPosition(moonTimes.set, lat, lon)
 
 			//==== draw dial on picker ====
+
+			var sunLineLength
+			var sunLineOpacity
 
 			if (sunPos.altitude > 0) { // if sun is above horizon, calculate lenght of sun line from altitude
 				sunLineLength = Math.cos(sunPos.altitude) * lineLength
@@ -190,21 +328,74 @@
 				sunLineOpacity = 0
 			}
 
-			// set sun line
-			sunLine.attr("x2", 100 - Math.sin(sunPos.azimuth) * sunLineLength).attr("y2", 100 + Math.cos(sunPos.azimuth) * sunLineLength).attr("stroke-opacity", sunLineOpacity)
+			if (plugin_options.astroSun || plugin_options.photoSun){
+				// set sun line
+				sunLine.attr("x2", 100 - Math.sin(sunPos.azimuth) * sunLineLength).attr("y2", 100 + Math.cos(sunPos.azimuth) * sunLineLength).attr("stroke-opacity", sunLineOpacity)
+				sunCircle.attr("cx", 100 - Math.sin(sunPos.azimuth) * sunLineLength/2).attr("cy", 100 + Math.cos(sunPos.azimuth) * sunLineLength/2).attr("fill-opacity", sunLineOpacity)
 
-			// if there is a sunrise, draw sunrise and sunset lines
-			if (isNaN(sunrisePos.azimuth)){
-				// hide lines
+				// if there is a sunrise, draw sunrise and sunset lines
+				if (isNaN(sunrisePos.azimuth)){
+					// hide lines
+					sunriseLine.attr("x2", 100).attr("y2", 100)
+					sunsetLine.attr("x2", 100).attr("y2", 100)
+				} else {
+					// draw lines
+					sunriseLine.attr("x2", 100 - Math.sin(sunrisePos.azimuth) * lineLength).attr("y2", 100 + Math.cos(sunrisePos.azimuth) * lineLength)
+					sunsetLine.attr("x2", 100 - Math.sin(sunsetPos.azimuth) * lineLength).attr("y2", 100 + Math.cos(sunsetPos.azimuth) * lineLength)
+				}
+			} else {
+				sunLine.attr("x2", 100).attr("y2", 100)
 				sunriseLine.attr("x2", 100).attr("y2", 100)
 				sunsetLine.attr("x2", 100).attr("y2", 100)
-			} else {
-				// draw lines
-				sunriseLine.attr("x2", 100 - Math.sin(sunrisePos.azimuth) * lineLength).attr("y2", 100 + Math.cos(sunrisePos.azimuth) * lineLength)
-				sunsetLine.attr("x2", 100 - Math.sin(sunsetPos.azimuth) * lineLength).attr("y2", 100 + Math.cos(sunsetPos.azimuth) * lineLength)
+				sunCircle.attr("fill-opacity", 0)
 			}
 
+			var moonLineLength
+			var moonLineOpacity
+
+			if (moonPos.altitude > 0) { // if sun is above horizon, calculate lenght of sun line from altitude
+				moonLineLength = Math.cos(moonPos.altitude) * lineLength
+				moonLineOpacity = 1
+			} else if (moonPos.altitude > -0.02) {  //if sun is less than 1 degrees below horizon, calculate opacity from altitude
+				moonLineLength = lineLength
+				moonLineOpacity = 1 + 50.0 * moonPos.altitude
+			} else { // if sun is further than 6 degrees below horizion, hide sun line
+				moonLineLength = lineLength
+				moonLineOpacity = 0
+			}
+
+			if (plugin_options.moon){
+				// set moon line
+				moonLine.attr("x2", 100 - Math.sin(moonPos.azimuth) * moonLineLength).attr("y2", 100 + Math.cos(moonPos.azimuth) * moonLineLength).attr("stroke-opacity", moonLineOpacity)
+				moonCircle.attr("cx", 100 - Math.sin(moonPos.azimuth) * moonLineLength/2).attr("cy", 100 + Math.cos(moonPos.azimuth) * moonLineLength/2).attr("fill-opacity", moonLineOpacity)
+
+				if (isNaN(moonrisePos.azimuth)){
+					// hide line
+					moonriseLine.attr("x2", 100).attr("y2", 100)
+				} else {
+					// draw line
+					moonriseLine.attr("x2", 100 - Math.sin(moonrisePos.azimuth) * lineLength).attr("y2", 100 + Math.cos(moonrisePos.azimuth) * lineLength)
+				}
+
+				if (isNaN(moonsetPos.azimuth)){
+					// hide line
+					moonsetLine.attr("x2", 100).attr("y2", 100)
+				} else {
+					// draw line
+					moonsetLine.attr("x2", 100 - Math.sin(moonsetPos.azimuth) * lineLength).attr("y2", 100 + Math.cos(moonsetPos.azimuth) * lineLength)
+				}
+			} else {
+					moonLine.attr("x2", 100).attr("y2", 100)
+					moonriseLine.attr("x2", 100).attr("y2", 100)
+					moonsetLine.attr("x2", 100).attr("y2", 100)
+					moonCircle.attr("fill-opacity", 0)
+			}
+
+
 			//==== draw timeline ====
+
+
+			var sunTimesConfig = plugin_options.astroSun?(plugin_options.photoSun?sunTimesConfigCombinded:sunTimesConfigAstonomical):(plugin_options.photoSun?sunTimesConfigPhotography:sunTimesConfigNone)
 
 			var minAltitude = SunCalc.getPosition(times.nadir, lat, lon).altitude * 180 / Math.PI
 			var maxAltitude = SunCalc.getPosition(times.solarNoon, lat, lon).altitude * 180 / Math.PI
@@ -215,24 +406,29 @@
 
 			// calculate first timeframe
 			var firstConfig
-			for (i in firstTimeConfig){
-				if (firstTimeConfig[i].altitude > minAltitude){
+			for (i in sunTimesConfig.first){
+				if (sunTimesConfig.first[i].altitude > minAltitude){
 					break;
 				}
-				firstConfig = firstTimeConfig[i]
+				firstConfig = sunTimesConfig.first[i]
 			}
 
 			//add first time to timeline (time 0 puts it at front during sorting and hides element from being rendered individually)
 			timeline.push({time: 0, name: undefined, raw_name: undefined, starts: firstConfig.starts, color_class: undefined, new_class: firstConfig.new_class})
-
 			for (var timeName in times){
 				if (sunTimesConfig[timeName] && !isNaN(times[timeName])){
 					timeline.push({time: times[timeName], name: sunTimesConfig[timeName].name, raw_name: timeName, starts: sunTimesConfig[timeName].starts, class: sunTimesConfig[timeName].class, new_class: sunTimesConfig[timeName].new_class})
 				}
 			}
 
-			// future: add moon times and eclipse time to timeline
-
+			//add moon times (if enabled)
+			if (plugin_options.moon){
+				for (var timeName in moonTimes){
+					if (moonTimesConfig[timeName] && !isNaN(moonTimes[timeName])){
+						timeline.push({time: moonTimes[timeName], name: moonTimesConfig[timeName].name, raw_name: "moon" + timeName, class: moonTimesConfig[timeName].class})
+					}
+				}
+			}
 
 			// sort timeline
 			timeline.sort((a,b) => (a.time > b.time) ? 1 : -1)
@@ -265,17 +461,34 @@
 			document.getElementById('azimuth').innerHTML = (sunPos.azimuth*180/Math.PI).toFixed(1) + "&deg;"
 			document.getElementById('altitude').innerHTML = (sunPos.altitude*180/Math.PI).toFixed(1) + "&deg;"
 
+			var moonIllumination = SunCalc.getMoonIllumination(time)
+			var phaseName
+			for (var phase in moonPhases){
+				if (phase < moonIllumination.phase){
+					phaseName = moonPhases[phase]
+				}
+			}
+
+			document.getElementById('azimuth-moon').innerHTML = (moonPos.azimuth*180/Math.PI).toFixed(1) + "&deg;"
+			document.getElementById('altitude-moon').innerHTML = (moonPos.altitude*180/Math.PI).toFixed(1) + "&deg;"
+			document.getElementById('phase-moon').innerHTML = phaseName
+			document.getElementById('fraction-moon').innerHTML = (moonIllumination.fraction*100).toFixed(1) + "%"
+
+			d3.select(".current-sun").classed("hide", !(plugin_options.astroSun || plugin_options.photoSun))
+			d3.select(".current-moon").classed("hide", !plugin_options.moon)
+
 			//===== draw altitude diagram =====
 
 			var data = []
+			var moonData = []
 
-			var t = new Date(time).setUTCHours(0,-timeOffset,0,0)
+			var t = times.nadir.getTime()
 			var steps = 100
 			var stepSize = 24.0*60*60*1000 / steps
 			//get altitude for each time
 			for (var i = 0 ; i<=steps; i++){
-				var alt = -SunCalc.getPosition(t + stepSize*i, lat, lon).altitude;
-				data[i] = {x: 1.0*i/steps, y: alt}
+				data[i] = {x: 1.0*i/steps, y: -SunCalc.getPosition(t + stepSize*i, lat, lon).altitude}
+				moonData[i] = {x: 1.0*i/steps, y: -SunCalc.getMoonPosition(t + stepSize*i, lat, lon).altitude}
 			}
 
 			// set line
@@ -284,12 +497,20 @@
 	                 .y(function(d) { return (d['y']+Math.PI/2) * 100/Math.PI });
 
 			// set d attirubte of line
-	    d3.select('#sun_path').attr('d', line(data));
+	    d3.select('#sun_path').attr('d', (plugin_options.astroSun||plugin_options.photoSun)?line(data):"");
+			d3.select('#moon_path').attr('d', plugin_options.moon?line(moonData):"");
 
 			// set current sun position (yellow circle)
-			d3.select('#sun')
-			.attr('cx', (time - t)*200.0/(24.0*60*60*1000) % 200)
+			d3.select('.path-circle#sun')
+			.attr('cx', mod((time - t)*200.0/(24.0*60*60*1000),200))
 			.attr('cy', (-sunPos.altitude+Math.PI/2) * 100/Math.PI )
+			.style('opacity', (plugin_options.astroSun||plugin_options.photoSun)?1:0)
+
+			d3.select('.path-circle#moon')
+			.attr('cx', mod((time - t)*200.0/(24.0*60*60*1000), 200))
+			.attr('cy', (-moonPos.altitude+Math.PI/2) * 100/Math.PI )
+			.style('opacity', plugin_options.moon?1:0)
+
 
 		}
 
@@ -311,12 +532,16 @@
 		}
 
 		const setTime = timeString => {
-			console.log('setting time to', timeString)
+			//console.log('setting time to', timeString)
 			let { lat, lon, values, overlay } = picker.getParams()
 			var time = store.get('timestamp')
-			var times = SunCalc.getTimes(time, lat, lon)
 
-			store.set('timestamp', times[timeString].getTime())
+			if (timeString.substring(0,4) == "moon"){
+				store.set('timestamp', moonTimes[timeString.substring(4)].getTime())
+			} else {
+				//var times = SunCalc.getTimes(time, lat, lon)
+				store.set('timestamp', times[timeString].getTime())
+			}
 		}
 
 		// picker has been opened at latLon coords

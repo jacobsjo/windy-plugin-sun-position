@@ -1,6 +1,6 @@
 {
   "name": "windy-plugin-sun-position",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "Windy plugin that gives shows sun position on the map and gives details about sunset and sunrise times.",
   "main": "dist/plugin.js",
   "scripts": {

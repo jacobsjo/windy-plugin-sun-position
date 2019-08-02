@@ -3,6 +3,18 @@
 
 @widthOfMyPlugin: 270px;
 
+@nightColor: black;
+@astroColor: #000030;
+@nauticalColor: #121260;
+@blueColor: blue;
+@goldenColor: orange;
+@dayColor: yellow;
+
+@pluginBackgroundColor: #404040;
+
+@sunDasharray: 10 2 1 2;
+@moonDasharray: 0 1 2 2 3 2 3 1;
+
 .onwindy-plugin-sun-position {
 
 	.left-border {
@@ -55,7 +67,7 @@
     padding: 15px 15px 15px 5px;
     font-size: 14px;
     line-height: 1.6;
-    background-color: #404040;
+    background-color: @pluginBackgroundColor;
     color:white;
 
     h2{
@@ -142,55 +154,72 @@
 
 			// colors of text
       .nightColor{
-        color: black;
+        color: @nightColor;
       }
       .astroColor{
-        color: #121654;
+        color: @astroColor;
       }
+			.nauticalColor{
+				color: @nauticalColor;
+			}
       .blueColor{
-        color: blue;
+        color: @blueColor;
       }
       .goldenColor{
-        color: orange;
+        color: @goldenColor;
       }
       .dayColor{
-        color: yellow;
+        color: @dayColor;
       }
 
 			// colors of circles
       .nightColor::after{
-        background-color: black;
+        background-color: @nightColor;
       }
       .astroColor::after{
-        background-color: #121654;
+        background-color: @astroColor;
+      }
+			.nauticalColor::after{
+        background-color: @nauticalColor;
       }
       .blueColor::after{
-        background-color: blue;
+        background-color: @blueColor;
       }
       .goldenColor::after{
-        background-color: orange;
+        background-color: @goldenColor;
       }
       .dayColor::after{
-        background-color: yellow;
+        background-color: @dayColor;
       }
 
 			// colors of timeline
       .nightColor::before{
-        border-left-color: black;
+        border-left-color: @nightColor;
       }
       .astroColor::before{
-        border-left-color: #121654;
+        border-left-color: @astroColor;
+      }
+			.nauticalColor::before{
+        border-left-color: @nauticalColor;
       }
       .blueColor::before{
-        border-left-color: blue;
+        border-left-color: @blueColor;
       }
       .goldenColor::before{
-        border-left-color: orange;
+        border-left-color: @goldenColor;
       }
       .dayColor::before{
-        border-left-color: yellow;
+        border-left-color: @dayColor;
       }
 
+			// moon colors
+			.moon{
+				color: gray;
+			}
+
+			.moon::after{
+				background-color: gray;
+			}
 
 
 
@@ -200,11 +229,56 @@
         text-align: center;
       }
 
+			.current-sun,.current-moon{
+				padding-top: 10pt;
+				padding-bottom: 10pt;
+				border-radius: 10pt;
+				margin-top: 5pt;
+				margin-bottom: 5pt;
+				background-color: #505050;
+			}
+
+			.current-sun.hide,.current-moon.hide{
+				display: none;
+			}
+
+			.current-pos-title{
+				display: inline-block;
+				margin-left: 60pt;
+				padding-bottom: 10pt;
+			}
+
+			.current-pos-title::before{
+				content: " ";
+				display: inline-block;
+				width: 15pt;
+				height: 15pt;
+				margin-bottom: -4pt;
+				border-radius: 7pt;
+				margin-right: 10pt;
+			}
+
+			.current-pos-title#sun::before{
+				background-color: yellow;
+			}
+
+			.current-pos-title#moon::before{
+				background-color: gray;
+			}
+
       .current-pos{
         display: inline-block;
-        width: 45%;
-        text-align: center;
+        width: 60%;
+        text-align: left;
+				padding-left: 10pt;
       }
+
+			.current-pos-label{
+        display: inline-block;
+        width: 35%;
+        text-align: right;
+      }
+
 
       .sun-path{
         width: 200px;
@@ -218,11 +292,54 @@
         stroke-width: 2px;
       }
 
-      .sun-circle{
+			.sun-path path#sun_path{
+				stroke-dasharray: @sunDasharray;
+			}
+
+			.sun-path path#moon_path{
+				stroke-dasharray: @moonDasharray;
+			}
+
+      .path-circle#sun{
         fill: yellow;
+      }
+			.path-circle#moon{
+        fill: gray;
       }
 
     }
+
+		.options{
+			text-align: center;
+			margin-bottom: 20pt;
+
+			.image-checkbox{
+				font-size: 22pt;
+				color: @pluginBackgroundColor;
+				text-align: center;
+				display: inline-block;
+				width: 30pt;
+				height: 30pt;
+				border-radius: 15pt;
+				font-family: "Symbola";
+				cursor: pointer;
+
+				-webkit-user-select: none; /* webkit (safari, chrome) browsers */
+		    -moz-user-select: none; /* mozilla browsers */
+		    -khtml-user-select: none; /* webkit (konqueror) browsers */
+		    -ms-user-select: none; /* IE10+ */
+			}
+			.image-checkbox#photoSun, .image-checkbox#astroSun{
+				background: #C0C000;
+			}
+			.image-checkbox#moon{
+				background: #C0C0C0;
+			}
+			.image-checkbox.off{
+				background: #505050!important;
+			}
+
+		}
 
 		.footnote{
 			color: gray;
@@ -254,14 +371,32 @@
     stroke-width: 3;
   }
 
-  .dial-line-sunrise, .dial-line-sunset{
+	.dial-line-moon{
+    stroke: rgba(68,65,65,0.84);;
+    stroke-width: 3;
+  }
+
+	.dial-circle-sun{
+		fill: yellow;
+	}
+
+	.dial-circle-moon{
+		fill: gray;
+	}
+
+
+  .dial-line-sunrise, .dial-line-sunset, .dial-line-moonrise, .dial-line-moonset{
     stroke: rgba(68,65,65,0.84);
-		stroke-dasharray: 5;
     stroke-width: 2;
+		stroke-dasharray: @sunDasharray;
 		pointer-events: auto;
   }
 
-  #hover.dial-line-sunrise, #hover.dial-line-sunset{
+	.dial-line-moonrise, .dial-line-moonset{
+		stroke-dasharray: @moonDasharray;
+	}
+
+  #hover.dial-line-sunrise, #hover.dial-line-sunset, #hover.dial-line-moonrise, #hover.dial-line-moonset{
     stroke-width: 4;
   }
 }
