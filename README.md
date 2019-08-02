@@ -1,6 +1,6 @@
 <p align="center"><img src="https://www.windy.com/img/logo201802/logo-full-windycom-gray-v3.svg"></p>
 
-Windy plugin that gives shows sun position on the map and gives details about sunset and sunrise times. To use the published version, go to [windy.com](https://www.windy.com), open the menu, click on "Install Windy plugin", enter "windy-plugin-sun-position" and click "Load plugin".
+Windy plugin that gives shows sun and moon position on the map and gives details about sunset and sunrise times as well as other sun and moon details. To use the published version, go to [www.windy.com](https://www.windy.com), open the menu, click on "Install Windy plugin", enter "windy-plugin-sun-position" and click "Load plugin".
 
 **The access to the plugin has changed in Version 0.2.0 to allow for mobile usage!**
 To open the display, right-click on the map (or tap and hold on mobile), then select "Sun Position". Then open a weather picker to see the sun dial and the details on the left
@@ -18,7 +18,7 @@ On the top of the detail pane it is possible to enable and disable individual di
 ![Sun detail pane](pictures/sundetail.jpg?raw=true "Sun detail pane")
 
 ### Development
-If you want to use the development build clone this repository and run,
+If you want to use the development build clone the git repository and run,
 ```sh
 npm i
 npm run start-dev
