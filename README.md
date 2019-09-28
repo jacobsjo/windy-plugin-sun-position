@@ -48,3 +48,5 @@ Fixed timezone issues:
 - redesigned current sun position display
 - added options to disable moon, astronomical details and photography details separately
 - added footnote with links to plugin pages
+#### V0.3.1
+- desktop sidebar hotfix (broken by change on windy)
