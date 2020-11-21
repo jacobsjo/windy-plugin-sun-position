@@ -2,16 +2,16 @@
 	<div class="mobile-header">Sun Details</div>
 
 	<div class="plugin-content">
+		<div class="options">
+			<span class="image-checkbox" id="astroSun" title="Show sun details (astronomical)">&#x1f52d;</span>&nbsp;
+			<span class="image-checkbox" id="photoSun" title="Show sun details (photography)">&#x1f4f7;</span>&nbsp;
+			<span class="image-checkbox" id="moon" title="Show moon details">&#x263E;</span>
+		</div>
 		<div class="open-picker">
 			<h2>Picker not open</h2>
 			Please open the weather picker to define position for sun-details.
 		</div>
 		<div class="sun-times" id="hide">
-			<div class="options">
-				<span class="image-checkbox" id="astroSun" title="Show sun details (astronomical)">&#x1f52d;</span>&nbsp;
-				<span class="image-checkbox" id="photoSun" title="Show sun details (photography)">&#x1f4f7;</span>&nbsp;
-				<span class="image-checkbox" id="moon" title="Show moon details">&#x263E;</span>
-			</div>
 			<div class="timeline"></div>
 
 			<div class="current">
@@ -57,6 +57,41 @@
 		import utils from '@windy/utils'
 		import store from '@windy/store'
 		import map from '@windy/map'
+		import location from '@windy/location';
+		import broadcast from '@windy/broadcast';
+
+		this.hasURL = true;
+
+		const setQs = qs => {
+		    location.url(`plugins/${this.ident}?${qs}`);
+				console.log(qs);
+		}
+
+		var plugin_options = {
+			"photoSun": true,
+			"astroSun": true,
+			"moon": true
+		}
+
+		const setPluginOption = (option, setting) => {
+			if (setting === undefined || setting === '' || setting === null) return;
+			plugin_options[option] = (setting === 'true');
+		}
+
+		const params = new URLSearchParams(this.query);
+
+		setPluginOption('photoSun', params.get('photoSun'));
+		setPluginOption('astroSun', params.get('astroSun'));
+		setPluginOption('moon', params.get('moon'));
+
+		console.log(plugin_options);
+
+
+
+		const updateQs = () => {
+			setQs("photoSun=" + plugin_options.photoSun + "&astroSun=" + plugin_options.astroSun + "&moon=" + plugin_options.moon )
+		}
+
 
 		//const plugin_version = "0.2.1"  //DO NOT REMOVE COMENT FROM THIS LINE: this line is added automatically by the compiler!
 
@@ -150,11 +185,7 @@
 
 		var isOpen = false;
 
-		var plugin_options = {
-			"photoSun": true,
-			"astroSun": true,
-			"moon": true
-		}
+
 
 		SunCalc.addTime(-4, "blueHourEnd", "blueHour")
 
@@ -162,14 +193,13 @@
 			var checkbox = d3.select(this);
 			plugin_options[checkbox.attr("id")] = checkbox.classed("off")
 			checkbox.classed("off", !checkbox.classed("off"));
+			updateQs();
 			redraw();
 		})
 
 		this.onopen = () => {
 			if (isOpen) return;
 			isOpen = true;
-
-
 
 			if (!d3.select(".picker").empty() && d3.select(".picker").style("display") != "none") {
 				onPickerOpened()
@@ -178,6 +208,11 @@
 
 			d3.select(".plugin-content .footnote .plugin-version").html(plugin_version)
 
+			updateQs();
+
+			d3.select("#windy-plugin-sun-position .options .image-checkbox#photoSun").classed("off", !plugin_options.photoSun);
+			d3.select("#windy-plugin-sun-position .options .image-checkbox#astroSun").classed("off", !plugin_options.astroSun);
+			d3.select("#windy-plugin-sun-position .options .image-checkbox#moon").classed("off", !plugin_options.moon);
 		}
 
 		this.onclose = () => {
@@ -208,6 +243,7 @@
 
 		// when the picker is opended, create svg to attach to picker and add lines
 		const onPickerOpened = () => {
+			updateQs();
 
 			d3.select(".picker").select("svg").remove() // just to be save that there will never be multiple svg's attached to the .picker
 
@@ -247,6 +283,10 @@
 			// show timeline in sidebar (and hide "open picker" message)
 			d3.select(".sun-times").attr("id", "")
 			d3.select(".open-picker").attr("id", "hide")
+
+			console.log(plugin_options.photoSun);
+			console.log(!plugin_options.photoSun);
+
 		}
 
 		// when the picker moves, redraw and look up timezone, if timezone is different redraw again with correct time
