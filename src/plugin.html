@@ -57,17 +57,10 @@
 		import utils from '@windy/utils'
 		import store from '@windy/store'
 		import map from '@windy/map'
-		import pluginDataLoader from '@windy/pluginDataLoader'
 
 		//const plugin_version = "0.2.1"  //DO NOT REMOVE COMENT FROM THIS LINE: this line is added automatically by the compiler!
 
 		const mod = (x, n) => (x % n + n) % n
-		const options = {
-			key: 'nMvpXdWHi4CcsJ6N0ewIYEcU0VE9ONMX',
-			plugin: 'windy-plugin-sun-position'
-		}
-
-		const load = pluginDataLoader( options )
 		const lineLength = 80
 
 		const sunTimesConfigPhotography = {
@@ -209,7 +202,8 @@
 		var moonsetLine
 		var moonCircle
 
-		var timeOffset = 0
+		//var timeOffset = 0
+		var timezone = 'UTC'
 		var useUTC = false
 
 		// when the picker is opended, create svg to attach to picker and add lines
@@ -258,24 +252,6 @@
 		// when the picker moves, redraw and look up timezone, if timezone is different redraw again with correct time
 		const movedPickerRedraw = () => {
 			redraw()
-
-			if (store.get('zuluMode')){
-				return;
-			}
-
-			let { lat, lon, values, overlay } = picker.getParams()
-			const dataOptions = {
-				model: 'gfs',
-				lat: lat,
-				lon: lon
-			}
-
-			load('forecast', dataOptions).then( ({data}) => {
-				if (timeOffset != data.celestial.TZoffsetMin){
-					timeOffset = data.celestial.TZoffsetMin
-					redraw()
-				}
-			})
 		}
 
 		var times
@@ -284,15 +260,18 @@
 		// update drawing and timeline
 		const redraw = () => {
 
-			if (store.get('zuluMode')){
-				timeOffset = 0;
-			}
-
 			// get picker position
 			let { lat, lon, values, overlay } = picker.getParams()
 
 			// get timestamp
 			var time = store.get('timestamp')
+
+			if (store.get('zuluMode')){
+				timezone = 'UTC';
+			} else {
+				timezone = tzlookup(lat,lon);
+			}
+
 
 			// get sun directions
 			times = SunCalc.getTimes(time, lat, lon)
@@ -515,15 +494,15 @@
 		}
 
 
-		function time_format(d) {
+		function time_format(d){
 			if (isNaN(d)){
 				return "--:--" + (store.get('zuluMode') ? "Z" : "")
 			}
 
-			var d_local = new Date(d.getTime() + timeOffset * 60 * 1000)
+			var d_local = new Date(new Date(d.getTime()).toLocaleString("en-US", {timeZone: timezone}));
 
-	    var hours = format_two_digits(d_local.getUTCHours());
-	    var minutes = format_two_digits(d_local.getUTCMinutes());
+	    var hours = format_two_digits(d_local.getHours());
+	    var minutes = format_two_digits(d_local.getMinutes());
 	    return hours + ":" + minutes + (store.get('zuluMode') ? "Z" : "");
 		}
 
