@@ -50,3 +50,7 @@ Fixed timezone issues:
 - added footnote with links to plugin pages
 #### V0.3.1
 - desktop sidebar hotfix (broken by change on windy)
+#### V0.3.2
+- fixed plugin loading issue (broken by change on windy)
+- changed timezone lookup to tz-lookup package
+- added querry string
