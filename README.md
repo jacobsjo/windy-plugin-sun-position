@@ -54,3 +54,5 @@ Fixed timezone issues:
 - fixed plugin loading issue (broken by change on windy)
 - changed timezone lookup to tz-lookup package
 - added querry string
+#### V0.3.3
+- fixed plugin loading issue (broken by change on windy)

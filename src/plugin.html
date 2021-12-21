@@ -63,8 +63,7 @@
 		this.hasURL = true;
 
 		const setQs = qs => {
-		    location.url(`plugins/${this.ident}?${qs}`);
-				console.log(qs);
+		    location.setUrl(`plugins/${this.ident}?${qs}`);
 		}
 
 		var plugin_options = {
