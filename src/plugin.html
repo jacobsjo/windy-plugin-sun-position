@@ -193,7 +193,7 @@
 			plugin_options[checkbox.attr("id")] = checkbox.classed("off")
 			checkbox.classed("off", !checkbox.classed("off"));
 			updateQs();
-			redraw();
+			movedPickerRedraw();
 		})
 
 		this.onopen = () => {
@@ -221,7 +221,7 @@
 
 		const readValues = latLon => {
 			pickerOpen = true
-			redraw()
+			redraw(latLon)
 		}
 
 		var svg
@@ -288,22 +288,27 @@
 
 		}
 
+		var lastLatLon = undefined
+
 		// when the picker moves, redraw and look up timezone, if timezone is different redraw again with correct time
-		const movedPickerRedraw = () => {
-			redraw()
+		const movedPickerRedraw = (latLon) => {
+			if (latLon !== undefined)
+				lastLatLon = latLon
+			redraw(lastLatLon)
 		}
 
 		var times
 		var moonTimes
 
-		// update drawing and timeline
-		const redraw = () => {
 
-			// get picker position
-			let { lat, lon, values, overlay } = picker.getParams()
+		// update drawing and timeline
+		const redraw = (latLon) => {
 
 			// get timestamp
 			var time = store.get('timestamp')
+
+			var lat = latLon.lat
+			var lon = latLon.lon
 
 			if (store.get('zuluMode')){
 				timezone = 'UTC';
@@ -567,14 +572,14 @@
 			if (!isOpen) return;
 			onPickerOpened()
 
-			movedPickerRedraw()
+			movedPickerRedraw(latLon)
 		} )
 
 		// picker was dragged by user to latLon coords
 		picker.on('pickerMoved', latLon => {
 			if (!isOpen) return;
 
-			movedPickerRedraw()
+			movedPickerRedraw(latLon)
 		})
 
 		// picker was closed
@@ -585,7 +590,7 @@
 			d3.select(".picker").select("svg").remove()
 		})
 
-		store.on('timestamp', ts => {redraw()})
+		store.on('timestamp', ts => {movedPickerRedraw()})
 
 	</script>
 </plugin>
