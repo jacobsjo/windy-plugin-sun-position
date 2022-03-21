@@ -56,5 +56,5 @@ Fixed timezone issues:
 - added querry string
 #### V0.3.3
 - fixed plugin loading issue (broken by change on windy)
-#### V0.3.4
+#### V0.3.4 and V0.3.5
 - fixed issue finding location (broken by change on windy)
