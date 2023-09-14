@@ -18,7 +18,7 @@ const plugin_options = {
 console.log(plugin_options);
 
 
-const plugin_version = "0.3.6"  //DO NOT REMOVE COMENT FROM THIS LINE: this line is added automatically by the compiler!
+const plugin_version = "0.3.6" 
 
 const mod = (x, n) => (x % n + n) % n
 const lineLength = 80

@@ -58,3 +58,5 @@ Fixed timezone issues:
 - fixed plugin loading issue (broken by change on windy)
 #### V0.3.4 and V0.3.5
 - fixed issue finding location (broken by change on windy)
+#### V0.3.6
+- fixed plugin loading issue (broken by change on windy)
